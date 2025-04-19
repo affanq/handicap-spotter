@@ -12,7 +12,7 @@ import {ai} from '@/ai/ai-instance';
 import {z} from 'genkit';
 
 const ValidateHandicapPermitInputSchema = z.object({
-  photoUrl: z.string().describe('The URL of the parked car photo.'),
+  base64Image: z.string().describe('The base64 encoded image data of the parked car photo.'),
 });
 export type ValidateHandicapPermitInput = z.infer<typeof ValidateHandicapPermitInputSchema>;
 
@@ -22,7 +22,7 @@ const ValidateHandicapPermitOutputSchema = z.object({
 });
 export type ValidateHandicapPermitOutput = z.infer<typeof ValidateHandicapPermitOutputSchema>;
 
-export async function validateHandicapPermit(input: ValidateHandicapPermitInput): Promise<ValidateHandicapPermitOutput> {
+export async function validateHandicapPermit(input: {base64Image: string}): Promise<ValidateHandicapPermitOutput> {
   return validateHandicapPermitFlow(input);
 }
 
@@ -30,7 +30,7 @@ const prompt = ai.definePrompt({
   name: 'validateHandicapPermitPrompt',
   input: {
     schema: z.object({
-      photoUrl: z.string().describe('The URL of the parked car photo.'),
+      base64Image: z.string().describe('The base64 encoded image data of the parked car photo.'),
     }),
   },
   output: {
@@ -47,7 +47,7 @@ Analyze the image and determine if the car has a valid handicap parking permit a
 
 If the car does not have a valid permit, explain the reason why.
 
-Photo: {{media url=photoUrl contentType="image/jpeg"}}
+Photo: {{media url=base64Image contentType="image/jpeg"}}
 `,
 });
 

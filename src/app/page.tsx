@@ -15,10 +15,22 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setImage(file);
-      setImageUrl(URL.createObjectURL(file));
+    const selectedFile = e.target.files?.[0];
+    if (selectedFile) {
+      setImage(selectedFile);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64String = reader.result as string;
+        setImageUrl(base64String);
+      };
+      reader.onerror = (error) => {
+        console.error("Error reading file:", error);
+        alert("Failed to read image file.");
+        setImage(null);
+        setImageUrl(null);
+      };
+
+      reader.readAsDataURL(selectedFile);
     }
   };
 
@@ -30,7 +42,7 @@ export default function Home() {
 
     setLoading(true);
     try {
-      const result = await validateHandicapPermit({ photoUrl: imageUrl });
+      const result = await validateHandicapPermit({ base64Image: imageUrl });
       setValidationResult(result);
     } catch (error) {
       console.error("Error during validation:", error);
