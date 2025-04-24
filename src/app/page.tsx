@@ -14,6 +14,14 @@ export default function Home() {
   const [validationResult, setValidationResult] = useState<{ isValidPermit: boolean; reason?: string } | null>(null);
   const [loading, setLoading] = useState(false);
 
+  const handleFileInputClick = () => {
+    // Clear previous image when file input is clicked
+    setImage(null);
+    setImageUrl(null);
+    setValidationResult(null)
+  };
+
+
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
     if (selectedFile) {
@@ -63,13 +71,20 @@ export default function Home() {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex flex-col items-center space-y-2">
-            <Input type="file" accept="image/*" onChange={handleImageUpload} />
+            <Input
+              type="file"
+              accept="image/*"
+              onChange={handleImageUpload}
+              onClick={handleFileInputClick}
+            />
+            
             {imageUrl && (
               <img
                 src={imageUrl}
                 alt="Uploaded"
                 className="mt-4 w-full h-64 object-contain rounded-md shadow-md"
               />
+              
             )}
           </div>
           <Button onClick={handleValidation} disabled={loading} className="w-full">
@@ -97,3 +112,4 @@ export default function Home() {
     </div>
   );
 }
+
