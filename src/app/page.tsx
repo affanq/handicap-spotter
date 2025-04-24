@@ -49,10 +49,29 @@ export default function Home() {
     }
 
     setLoading(true);
+    
     try {
       const result = await validateHandicapPermit({ base64Image: imageUrl });
       setValidationResult(result);
+
+      // If the permit is not valid, store the result in local storage
+      if (!result.isValidPermit && result.reason) {
+        const violation = {
+            id: Date.now().toString(),
+            photoUrl: imageUrl,
+            isValidPermit: result.isValidPermit,
+            reason: result.reason
+        }
+        const storedViolations = localStorage.getItem("violations");
+        const currentViolations = storedViolations ? JSON.parse(storedViolations) : [];
+        currentViolations.push(violation);
+        localStorage.setItem("violations", JSON.stringify(currentViolations));
+      }
+
+      
     } catch (error) {
+
+
       console.error("Error during validation:", error);
       alert("Failed to validate image. Please try again.");
     } finally {

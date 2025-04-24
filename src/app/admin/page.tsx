@@ -1,6 +1,7 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -18,23 +19,33 @@ interface ViolationRecord {
   reason?: string;
 }
 
-const DUMMY_VIOLATIONS: ViolationRecord[] = [
-  {
-    id: "1",
-    photoUrl: "https://picsum.photos/200/300",
-    isValidPermit: false,
-    reason: "Permit expired",
-  },
-  {
-    id: "2",
-    photoUrl: "https://picsum.photos/200/300",
-    isValidPermit: false,
-    reason: "No permit displayed",
-  },
-];
+
 
 const AdminPage: React.FC = () => {
+
+  const clearViolations = () => {
+      localStorage.removeItem("violations");
+      setViolations([]);
+    };
+
+  const [violations, setViolations] = useState<ViolationRecord[]>([]); 
+
+  useEffect(() => {
+    // Retrieve violations from local storage
+    const storedViolations = localStorage.getItem("violations");
+    if (storedViolations) {
+      setViolations(JSON.parse(storedViolations));
+    } else {
+      // If no violations are present, set it as empty array
+      localStorage.setItem("violations", JSON.stringify([]))
+      setViolations([]);
+    }
+  }, []);
+
   return (
+    
+
+
     <div className="container mx-auto py-10">
       <h1 className="text-3xl font-bold mb-5">Admin Dashboard</h1>
       <Table>
@@ -48,8 +59,8 @@ const AdminPage: React.FC = () => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {DUMMY_VIOLATIONS.map((violation) => (
-            <TableRow key={violation.id}>
+          {violations.map((violation) => (
+            <TableRow key={violation.id} >
               <TableCell className="font-medium">{violation.id}</TableCell>
               <TableCell>
                 <img
@@ -64,8 +75,10 @@ const AdminPage: React.FC = () => {
           ))}
         </TableBody>
       </Table>
+      <div className="mt-4">
+      <Button onClick={clearViolations}>Clear Violations</Button>
+    </div>
     </div>
   );
 };
-
 export default AdminPage;
